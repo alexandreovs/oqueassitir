@@ -5,16 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>O Que Assistir - Encontre seu próximo filme ou série</title>
-       <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3855831134101762"
-    crossorigin="anonymous"></script>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-HDY97LCBZC"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-HDY97LCBZC');
-</script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="https://ico.buildglarecontent.com/oqueassistir/favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,13 +50,110 @@
       
       .suggestion-card {
         transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
       
       .suggestion-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 15px -3px rgba(229, 9, 20, 0.3);
       }
+    
+      /* Novos estilos adicionados */
+      .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+    
+      /* Ajustes para a área de sugestões */
+      #suggestionArea {
+        transition: all 0.3s ease;
+      }
+    
+      #multipleSuggestions > div {
+        gap: 1.5rem;
+        padding: 0.5rem;
+      }
+    
+      /* Ajustes para telas menores */
+      @media (max-width: 768px) {
+        #multipleSuggestions > div {
+          grid-template-columns: 1fr;
+        }
+        
+        .suggestion-card {
+          max-width: 100%;
+          margin: 0 auto;
+        }
+    
+        /* Ajuste para a visualização única em mobile */
+        #singleSuggestion {
+          flex-direction: column;
+        }
+        
+        #singleSuggestion > div:first-child {
+          width: 100%;
+          margin-bottom: 1.5rem;
+        }
+      }
+    
+      /* Melhorias nos cards */
+      .suggestion-card .aspect-\[2\/3\] {
+        position: relative;
+      }
+    
+      .suggestion-card img {
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+    
+      .suggestion-card:hover img {
+        transform: scale(1.02);
+      }
+    
+      /* Ajustes no texto */
+      #singleDescription {
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+    
+      /* Espaçamento melhorado para os botões */
+      #dislikeSingle, .dislike-button {
+        transition: all 0.2s ease;
+      }
+    
+      #dislikeSingle:hover, .dislike-button:hover {
+        transform: translateY(-2px);
+      }
+    
+      /* Ajuste para os badges de informação */
+      .bg-\[\#3d3d3d\] {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+      }
+    
+      /* Melhor espaçamento para a visualização única */
+      #singleSuggestion > div:last-child {
+        padding: 1rem;
+      }
+    
+      @media (min-width: 768px) {
+        #singleSuggestion > div:last-child {
+          padding: 1.5rem;
+        }
+      }
     </style>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3855831134101762"
+    crossorigin="anonymous"></script>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HDY97LCBZC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-HDY97LCBZC');
+</script>
   </head>
   <body class="bg-[#121212] text-white min-h-screen flex flex-col font-roboto">
     <main class="container mx-auto px-4 py-8 flex-grow flex flex-col items-center justify-center max-w-3xl">
@@ -535,42 +622,36 @@ function updateSingleSuggestion(suggestion) {
   document.getElementById('singlePoster').alt = `Poster de ${suggestion.title}`;
 }
 
+// Função para adicionar cards de sugestão - ATUALIZADA com melhor espaçamento
 function addSuggestionCard(suggestion) {
   const card = document.createElement('div');
-  card.className = 'suggestion-card bg-[#2d2d2d] rounded-xl overflow-hidden flex flex-col h-full';
+  card.className = 'suggestion-card bg-[#2d2d2d] rounded-xl overflow-hidden flex flex-col h-full transition-all hover:transform hover:-translate-y-1 hover:shadow-lg';
   
-  // Format duration based on type (movie or TV show)
-  const durationText = suggestion.type === 'movie' 
-    ? `${suggestion.runtime || 'N/A'} min` 
-    : 'Série';
+  // Mostrar duração formatada corretamente
+  const durationText = formatRuntime(suggestion.runtime);
   
-  // Extract year from release_date or first_air_date
-  const year = suggestion.release_date 
-    ? suggestion.release_date.substring(0, 4)
-    : suggestion.first_air_date 
-      ? suggestion.first_air_date.substring(0, 4)
-      : 'N/A';
-  
-  // Set poster image
-  const posterUrl = suggestion.poster_path 
-    ? `https://image.tmdb.org/t/p/w500${suggestion.poster_path}`
-    : 'https://via.placeholder.com/500x750?text=Sem+Poster';
+  const rating = suggestion.vote_average 
+    ? `⭐ ${suggestion.vote_average.toFixed(1)}/10`
+    : 'Sem avaliação';
   
   card.innerHTML = `
     <div class="aspect-[2/3] bg-gray-800 overflow-hidden">
-      <img src="${posterUrl}" alt="Poster de ${suggestion.title}" class="w-full h-full object-cover">
+      <img src="https://image.tmdb.org/t/p/w500${suggestion.poster_path}" 
+           alt="Poster de ${suggestion.title}" 
+           class="w-full h-full object-cover hover:opacity-90 transition-opacity">
     </div>
-    <div class="p-4 flex-1 flex flex-col">
-      <h3 class="text-xl font-bold mb-2">${suggestion.title}</h3>
-      <div class="flex items-center gap-2 mb-2">
-        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${durationText}</span>
-        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${year}</span>
+    <div class="p-4 flex-1 flex flex-col gap-3">
+      <h3 class="text-lg font-bold line-clamp-2" style="min-height: 3rem;">${suggestion.title}</h3>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded whitespace-nowrap">${durationText}</span>
+        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${suggestion.release_date?.substring(0, 4) || 'N/A'}</span>
+        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${rating}</span>
       </div>
-      <div class="flex items-center gap-2 mb-3">
-        <span class="text-gray-400 text-sm">Disponível em:</span>
-        <span class="bg-[#E50914] px-2 py-1 rounded-full text-xs font-medium">${suggestion.streaming || 'Não disponível'}</span>
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-gray-400 text-xs">Disponível em:</span>
+        <span class="bg-[#E50914] px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap">${suggestion.streaming}</span>
       </div>
-      <button class="dislike-button mt-auto bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all text-sm" data-id="${suggestion.id}">
+      <button class="dislike-button mt-4 bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all text-sm w-full">
         Não gostei! Me dê outra
       </button>
     </div>
@@ -578,7 +659,7 @@ function addSuggestionCard(suggestion) {
   
   multipleSuggestions.querySelector('div').appendChild(card);
   
-  // Setup dislike button
+  // Configurar o botão de "Não gostei"
   const dislikeButton = card.querySelector('.dislike-button');
   dislikeButton.addEventListener('click', async function() {
     if (isLoading) return;
@@ -588,72 +669,52 @@ function addSuggestionCard(suggestion) {
       this.textContent = 'Carregando...';
       this.disabled = true;
       
-      // Fetch new suggestions
       const newSuggestions = await fetchSuggestions(selectedTime, selectedMood, selectedStreaming);
       
       if (!newSuggestions || newSuggestions.length === 0) {
         alert('Não temos mais sugestões com esses critérios. Tente outros filtros!');
-        suggestionArea.classList.add('hidden');
-        isLoading = false;
-        this.textContent = 'Não gostei! Me dê outra';
-        this.disabled = false;
         return;
       }
       
-      // Get new random suggestion
-      const newRandomIndex = Math.floor(Math.random() * newSuggestions.length);
-      const newSuggestion = newSuggestions[newRandomIndex];
+      const newSuggestion = newSuggestions[Math.floor(Math.random() * newSuggestions.length)];
       
-      // Format duration based on type (movie or TV show)
-      const durationText = newSuggestion.type === 'movie' 
-        ? `${newSuggestion.runtime || 'N/A'} min` 
-        : 'Série';
+      // Atualizar o cartão com a nova sugestão
+      const newDurationText = formatRuntime(newSuggestion.runtime);
       
-      // Extract year from release_date or first_air_date
-      const year = newSuggestion.release_date 
-        ? newSuggestion.release_date.substring(0, 4)
-        : newSuggestion.first_air_date 
-          ? newSuggestion.first_air_date.substring(0, 4)
-          : 'N/A';
+      const newRating = newSuggestion.vote_average 
+        ? `⭐ ${newSuggestion.vote_average.toFixed(1)}/10`
+        : 'Sem avaliação';
       
-      // Set poster image
-      const posterUrl = newSuggestion.poster_path 
-        ? `https://image.tmdb.org/t/p/w500${newSuggestion.poster_path}`
-        : 'https://via.placeholder.com/500x750?text=Sem+Poster';
-      
-      // Update card
-      const cardElement = this.closest('.suggestion-card');
-      cardElement.innerHTML = `
+      card.innerHTML = `
         <div class="aspect-[2/3] bg-gray-800 overflow-hidden">
-          <img src="${posterUrl}" alt="Poster de ${newSuggestion.title}" class="w-full h-full object-cover">
+          <img src="https://image.tmdb.org/t/p/w500${newSuggestion.poster_path}" 
+               alt="Poster de ${newSuggestion.title}" 
+               class="w-full h-full object-cover hover:opacity-90 transition-opacity">
         </div>
-        <div class="p-4 flex-1 flex flex-col">
-          <h3 class="text-xl font-bold mb-2">${newSuggestion.title}</h3>
-          <div class="flex items-center gap-2 mb-2">
-            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${durationText}</span>
-            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${year}</span>
+        <div class="p-4 flex-1 flex flex-col gap-3">
+          <h3 class="text-lg font-bold line-clamp-2" style="min-height: 3rem;">${newSuggestion.title}</h3>
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded whitespace-nowrap">${newDurationText}</span>
+            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${newSuggestion.release_date?.substring(0, 4) || 'N/A'}</span>
+            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${newRating}</span>
           </div>
-          <div class="flex items-center gap-2 mb-3">
-            <span class="text-gray-400 text-sm">Disponível em:</span>
-            <span class="bg-[#E50914] px-2 py-1 rounded-full text-xs font-medium">${newSuggestion.streaming || 'Não disponível'}</span>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-gray-400 text-xs">Disponível em:</span>
+            <span class="bg-[#E50914] px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap">${newSuggestion.streaming}</span>
           </div>
-          <button class="dislike-button mt-auto bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all text-sm" data-id="${newSuggestion.id}">
+          <button class="dislike-button mt-4 bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all text-sm w-full">
             Não gostei! Me dê outra
           </button>
         </div>
       `;
       
-      // Setup new dislike button
-      const newDislikeButton = cardElement.querySelector('.dislike-button');
-      newDislikeButton.addEventListener('click', async function() {
-        if (isLoading) return;
-        dislikeButton.click();
-      });
+      // Reconfigurar o evento para o novo botão
+      const newDislikeButton = card.querySelector('.dislike-button');
+      newDislikeButton.addEventListener('click', dislikeButton.click.bind(dislikeButton));
       
-      isLoading = false;
     } catch (error) {
-      console.error('Error fetching new suggestion:', error);
-      alert('Ocorreu um erro ao buscar novas sugestões. Por favor, tente novamente.');
+      console.error('Erro ao buscar nova sugestão:', error);
+      alert('Ocorreu um erro ao buscar nova sugestão.');
     } finally {
       isLoading = false;
       this.textContent = 'Não gostei! Me dê outra';
