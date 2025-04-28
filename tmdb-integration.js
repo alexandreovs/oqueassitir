@@ -121,29 +121,43 @@ function getStreamingName(streamingCode) {
   return names[streamingCode] || 'Vários streamings';
 }
 
-// Atualizar a função updateSingleSuggestion para mostrar mais informações
+// Função corrigida para atualizar sugestão única
 function updateSingleSuggestion(suggestion) {
+  // Limpar avaliações anteriores primeiro
+  const infoContainer = document.querySelector('#singleSuggestion .flex-1');
+  const existingRating = infoContainer.querySelector('.rating-badge');
+  if (existingRating) {
+    existingRating.remove();
+  }
+
+  // Atualizar informações básicas
   document.getElementById('singleTitle').textContent = suggestion.title;
   
-  // Mostrar avaliação se disponível
-  const rating = suggestion.vote_average 
-    ? `⭐ ${suggestion.vote_average.toFixed(1)}/10`
-    : 'Sem avaliação';
+  // Format duration
+  const durationText = suggestion.type === 'movie' 
+    ? `${suggestion.runtime || 'N/A'} min` 
+    : 'Série';
+  document.getElementById('singleDuration').textContent = durationText;
   
-  document.getElementById('singleDuration').textContent = `${suggestion.runtime || 'N/A'} min`;
-  document.getElementById('singleYear').textContent = suggestion.release_date 
+  // Format year
+  const year = suggestion.release_date 
     ? suggestion.release_date.substring(0, 4)
     : 'N/A';
+  document.getElementById('singleYear').textContent = year;
+
+  // Adicionar avaliação (se existir)
+  if (suggestion.vote_average) {
+    const rating = `⭐ ${suggestion.vote_average.toFixed(1)}/10`;
+    const ratingBadge = document.createElement('span');
+    ratingBadge.className = 'bg-[#3d3d3d] text-sm px-2 py-1 rounded rating-badge';
+    ratingBadge.textContent = rating;
+    document.getElementById('singleYear').insertAdjacentElement('afterend', ratingBadge);
+  }
+
+  // Restante das atualizações
+  document.getElementById('singleDescription').textContent = suggestion.overview || 'Sem descrição disponível';
+  document.getElementById('singleStreaming').textContent = suggestion.streaming || 'Não disponível em streaming';
   
-  // Adicionar a avaliação
-  const yearElement = document.getElementById('singleYear');
-  yearElement.insertAdjacentHTML('afterend', 
-    `<span class="bg-[#3d3d3d] text-sm px-2 py-1 rounded">${rating}</span>`);
-  
-  document.getElementById('singleDescription').textContent = suggestion.overview;
-  document.getElementById('singleStreaming').textContent = suggestion.streaming;
-  
-  // Atualizar a imagem do poster
   const posterUrl = suggestion.poster_path 
     ? `https://image.tmdb.org/t/p/w500${suggestion.poster_path}`
     : 'https://via.placeholder.com/500x750?text=Sem+Poster';
