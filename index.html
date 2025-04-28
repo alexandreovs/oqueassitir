@@ -1,0 +1,657 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>O Que Assistir - Encontre seu próximo filme ou série</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="https://ico.buildglarecontent.com/oqueassistir/favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: 'Roboto', sans-serif;
+      }
+      
+      input[type=range] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 8px;
+        background: #2d2d2d;
+        border-radius: 5px;
+        outline: none;
+      }
+      
+      input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 24px;
+        height: 24px;
+        background: #E50914;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      
+      input[type=range]::-moz-range-thumb {
+        width: 24px;
+        height: 24px;
+        background: #E50914;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      
+      .time-button.active, .mood-button.active, .streaming-button.active {
+        background-color: #E50914;
+        transform: scale(1.05);
+      }
+      
+      .suggestion-card {
+        transition: all 0.3s ease;
+      }
+      
+      .suggestion-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(229, 9, 20, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-[#121212] text-white min-h-screen flex flex-col font-roboto">
+    <main class="container mx-auto px-4 py-8 flex-grow flex flex-col items-center justify-center max-w-3xl">
+      <h1 class="text-4xl md:text-5xl font-bold text-center mb-8">O Que Assistir?</h1>
+      
+      <div class="w-full space-y-8">
+        <!-- Time Selection Section -->
+        
+<section id="timeSelector" class="bg-[#1e1e1e] p-6 rounded-xl shadow-lg">
+<h2 class="text-2xl font-bold mb-4">Quanto tempo você tem?</h2>
+
+<div class="flex flex-wrap gap-3 mb-6">
+  <button class="time-button flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-3 px-4 rounded-full transition-all" data-time="60">
+    Menos de 1h
+  </button>
+  <button class="time-button flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-3 px-4 rounded-full transition-all" data-time="120">
+    1h–2h
+  </button>
+  <button class="time-button flex-1 bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-3 px-4 rounded-full transition-all" data-time="240">
+    Madrugada adentro
+  </button>
+</div>
+
+<div class="mt-6">
+  <div class="flex justify-between text-sm mb-1">
+    <span>30min</span>
+    <span id="timeValue">120min</span>
+    <span>240min</span>
+  </div>
+  <input 
+    type="range" 
+    id="timeSlider" 
+    min="30" 
+    max="240" 
+    step="5" 
+    value="120"
+    class="w-full"
+  >
+</div>
+</section>
+
+        
+        <!-- Mood Selection Section -->
+        
+<section id="moodSelector" class="bg-[#1e1e1e] p-6 rounded-xl shadow-lg">
+<h2 class="text-2xl font-bold mb-4">Qual seu humor hoje?</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+  <button class="mood-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-mood="alegre">
+    <span class="text-4xl mb-2">😊</span>
+    <span>Alegre</span>
+  </button>
+  
+  <button class="mood-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-mood="nervoso">
+    <span class="text-4xl mb-2">😡</span>
+    <span>Nervoso</span>
+  </button>
+  
+  <button class="mood-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-mood="bizarro">
+    <span class="text-4xl mb-2">🤪</span>
+    <span>Bizarro</span>
+  </button>
+  
+  <button class="mood-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-mood="romântico">
+    <span class="text-4xl mb-2">💘</span>
+    <span>Romântico</span>
+  </button>
+  
+  <button class="mood-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center md:col-span-1 col-span-2" data-mood="inteligente">
+    <span class="text-4xl mb-2">🧠</span>
+    <span>Inteligente</span>
+  </button>
+</div>
+</section>
+
+        
+        <!-- Streaming Selection Section -->
+        
+<section id="streamingSelector" class="bg-[#1e1e1e] p-6 rounded-xl shadow-lg mt-8">
+<h2 class="text-2xl font-bold mb-4">Em qual streaming? (opcional)</h2>
+
+<div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+  <button class="streaming-button active bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-streaming="">
+    <span class="text-4xl mb-2">🎬</span>
+    <span>Qualquer</span>
+  </button>
+  
+  <button class="streaming-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-streaming="netflix">
+    <span class="text-4xl mb-2">🔴</span>
+    <span>Netflix</span>
+  </button>
+  
+  <button class="streaming-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-streaming="prime">
+    <span class="text-4xl mb-2">📦</span>
+    <span>Prime Video</span>
+  </button>
+  
+  <button class="streaming-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-streaming="disney">
+    <span class="text-4xl mb-2">✨</span>
+    <span>Disney+</span>
+  </button>
+  
+  <button class="streaming-button bg-[#2d2d2d] hover:bg-[#3d3d3d] text-white py-4 px-2 rounded-xl transition-all flex flex-col items-center" data-streaming="hbo">
+    <span class="text-4xl mb-2">🔵</span>
+    <span>HBO Max</span>
+  </button>
+</div>
+</section>
+
+        
+        <!-- Action Button -->
+        <div class="text-center mt-10">
+          <button id="surpriseButton" class="bg-[#E50914] hover:bg-[#f40612] text-white text-xl font-bold py-4 px-8 rounded-full transition-all transform hover:scale-105">
+            Me Surpreenda!
+          </button>
+        </div>
+        
+        <!-- Suggestions Area (Initially Hidden) -->
+        
+<section id="suggestionArea" class="bg-[#1e1e1e] p-6 rounded-xl shadow-lg mt-8 hidden">
+<h2 class="text-2xl font-bold mb-6">Sugestão para você:</h2>
+
+<!-- Single Suggestion View -->
+<div id="singleSuggestion" class="hidden">
+  <div class="bg-[#2d2d2d] rounded-xl p-5 flex flex-col md:flex-row gap-6 items-center">
+    <div class="w-full md:w-1/3 aspect-[2/3] bg-gray-800 rounded-lg overflow-hidden">
+      <img id="singlePoster" src="" alt="Poster do filme" class="w-full h-full object-cover">
+    </div>
+    
+    <div class="flex-1">
+      <h3 id="singleTitle" class="text-2xl font-bold mb-2"></h3>
+      <div class="flex items-center gap-2 mb-3">
+        <span id="singleDuration" class="bg-[#3d3d3d] text-sm px-2 py-1 rounded"></span>
+        <span id="singleYear" class="bg-[#3d3d3d] text-sm px-2 py-1 rounded"></span>
+      </div>
+      <p id="singleDescription" class="text-gray-300 mb-4"></p>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="text-gray-400">Disponível em:</span>
+        <span id="singleStreaming" class="bg-[#E50914] px-3 py-1 rounded-full text-sm font-medium"></span>
+      </div>
+      <button id="dislikeSingle" class="mt-2 bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all">
+        Não gostei! Me dê outra
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Multiple Suggestions View -->
+<div id="multipleSuggestions" class="hidden">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <!-- Cards will be dynamically inserted here -->
+  </div>
+</div>
+</section>
+
+      </div>
+    </main>
+    
+    <footer class="py-4 text-center text-gray-400 text-sm">
+      <p>© 2025 O Que Assistir - Encontre o que assistir baseado no seu tempo e humor</p>
+    </footer>
+    
+    
+<script>
+// DOM Elements
+const timeButtons = document.querySelectorAll('.time-button');
+const timeSlider = document.getElementById('timeSlider');
+const timeValue = document.getElementById('timeValue');
+const moodButtons = document.querySelectorAll('.mood-button');
+const streamingButtons = document.querySelectorAll('.streaming-button');
+const surpriseButton = document.getElementById('surpriseButton');
+const suggestionArea = document.getElementById('suggestionArea');
+const singleSuggestion = document.getElementById('singleSuggestion');
+const multipleSuggestions = document.getElementById('multipleSuggestions');
+
+// State
+let selectedTime = 120;
+let selectedMood = null;
+let selectedStreaming = "";
+let isLoading = false;
+
+// Initialize
+timeSlider.value = selectedTime;
+updateTimeValue();
+
+// Initialize streaming (set "Qualquer" as default)
+document.querySelector('.streaming-button[data-streaming=""]').classList.add('active');
+
+// Event Listeners
+timeButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // Remove active class from all buttons
+    timeButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
+    button.classList.add('active');
+    
+    // Update selected time
+    selectedTime = parseInt(button.dataset.time);
+    
+    // Update slider
+    timeSlider.value = selectedTime;
+    updateTimeValue();
+  });
+});
+
+timeSlider.addEventListener('input', () => {
+  // Update selected time
+  selectedTime = parseInt(timeSlider.value);
+  
+  // Update time value display
+  updateTimeValue();
+  
+  // Remove active class from all buttons
+  timeButtons.forEach(btn => btn.classList.remove('active'));
+  
+  // Add active class to corresponding button if exists
+  timeButtons.forEach(btn => {
+    if (parseInt(btn.dataset.time) === selectedTime) {
+      btn.classList.add('active');
+    }
+  });
+});
+
+moodButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // Remove active class from all buttons
+    moodButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
+    button.classList.add('active');
+    
+    // Update selected mood
+    selectedMood = button.dataset.mood;
+  });
+});
+
+// Fix streaming buttons
+streamingButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    // Remove active class from all buttons
+    streamingButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Add active class to clicked button
+    button.classList.add('active');
+    
+    // Update selected streaming
+    selectedStreaming = button.dataset.streaming;
+    console.log('Selected streaming:', selectedStreaming);
+  });
+});
+
+// Make sure streaming buttons are initialized correctly
+document.addEventListener('DOMContentLoaded', () => {
+  // Set default streaming button active
+  const defaultStreamingButton = document.querySelector('.streaming-button[data-streaming=""]');
+  if (defaultStreamingButton) {
+    defaultStreamingButton.classList.add('active');
+    selectedStreaming = "";
+  }
+});
+
+surpriseButton.addEventListener('click', async () => {
+  if (!selectedTime) {
+    alert('Por favor, selecione um tempo disponível!');
+    return;
+  }
+  
+  if (!selectedMood) {
+    alert('Por favor, seleccione seu humor!');
+    return;
+  }
+  
+  if (isLoading) return;
+  
+  try {
+    isLoading = true;
+    surpriseButton.textContent = 'Carregando...';
+    surpriseButton.disabled = true;
+    
+    // Fetch suggestions from API
+    const suggestions = await fetchSuggestions(selectedTime, selectedMood, selectedStreaming);
+    
+    if (!suggestions || suggestions.length === 0) {
+      alert('Não encontramos sugestões com esses critérios. Tente aumentar o tempo ou escolher outro humor.');
+      isLoading = false;
+      surpriseButton.textContent = 'Me Surpreenda!';
+      surpriseButton.disabled = false;
+      return;
+    }
+    
+    // Show suggestion area
+    suggestionArea.classList.remove('hidden');
+    
+    // Randomly decide to show single or multiple suggestions
+    const showSingle = Math.random() > 0.5 || suggestions.length === 1;
+    
+    if (showSingle) {
+      // Show single suggestion
+      singleSuggestion.classList.remove('hidden');
+      multipleSuggestions.classList.add('hidden');
+      
+      // Get random suggestion
+      const randomIndex = Math.floor(Math.random() * suggestions.length);
+      const suggestion = suggestions[randomIndex];
+      
+      // Update UI
+      updateSingleSuggestion(suggestion);
+      
+      // Setup dislike button
+      document.getElementById('dislikeSingle').onclick = async () => {
+        if (isLoading) return;
+        
+        try {
+          isLoading = true;
+          document.getElementById('dislikeSingle').textContent = 'Carregando...';
+          document.getElementById('dislikeSingle').disabled = true;
+          
+          // Fetch new suggestions
+          const newSuggestions = await fetchSuggestions(selectedTime, selectedMood, selectedStreaming);
+          
+          if (!newSuggestions || newSuggestions.length === 0) {
+            alert('Não temos mais sugestões com esses critérios. Tente outros filtros!');
+            suggestionArea.classList.add('hidden');
+            isLoading = false;
+            document.getElementById('dislikeSingle').textContent = 'Não gostei! Me dê outra';
+            document.getElementById('dislikeSingle').disabled = false;
+            return;
+          }
+          
+          // Get new random suggestion
+          const newRandomIndex = Math.floor(Math.random() * newSuggestions.length);
+          const newSuggestion = newSuggestions[newRandomIndex];
+          
+          // Update UI
+          updateSingleSuggestion(newSuggestion);
+          
+          isLoading = false;
+          document.getElementById('dislikeSingle').textContent = 'Não gostei! Me dê outra';
+          document.getElementById('dislikeSingle').disabled = false;
+        } catch (error) {
+          console.error('Error fetching new suggestion:', error);
+          alert('Ocorreu um erro ao buscar novas sugestões. Por favor, tente novamente.');
+          isLoading = false;
+          document.getElementById('dislikeSingle').textContent = 'Não gostei! Me dê outra';
+          document.getElementById('dislikeSingle').disabled = false;
+        }
+      };
+    } else {
+      // Show multiple suggestions
+      singleSuggestion.classList.add('hidden');
+      multipleSuggestions.classList.remove('hidden');
+      
+      // Clear previous suggestions
+      multipleSuggestions.querySelector('div').innerHTML = '';
+      
+      // Get up to 3 random suggestions
+      const maxSuggestions = Math.min(3, suggestions.length);
+      const selectedIndexes = [];
+      
+      // Select random indexes without repetition
+      while (selectedIndexes.length < maxSuggestions) {
+        const randomIndex = Math.floor(Math.random() * suggestions.length);
+        if (!selectedIndexes.includes(randomIndex)) {
+          selectedIndexes.push(randomIndex);
+        }
+      }
+      
+      // Add suggestion cards
+      selectedIndexes.forEach(index => {
+        const suggestion = suggestions[index];
+        addSuggestionCard(suggestion);
+      });
+    }
+    
+    // Scroll to suggestion area
+    suggestionArea.scrollIntoView({ behavior: 'smooth' });
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    alert('Ocorreu um erro ao buscar sugestões. Por favor, tente novamente.');
+  } finally {
+    isLoading = false;
+    surpriseButton.textContent = 'Me Surpreenda!';
+    surpriseButton.disabled = false;
+  }
+});
+
+// Helper Functions
+function updateTimeValue() {
+  timeValue.textContent = `${timeSlider.value}min`;
+}
+
+async function fetchSuggestions(time, mood, streaming) {
+  if (!time) time = 120; // Default to 120 minutes if not specified
+  
+  // Ensure mood parameter is valid
+  const validMoods = ['alegre', 'nervoso', 'bizarro', 'romântico', 'inteligente'];
+  if (mood && !validMoods.includes(mood)) {
+    console.warn(`Mood "${mood}" is not in the list of valid moods: ${validMoods.join(', ')}`);
+  }
+  
+  let url = `/api/suggestions?time=${time}`;
+  if (mood) {
+    url += `&mood=${encodeURIComponent(mood)}`;
+  }
+  if (streaming && streaming !== "") {
+    url += `&streaming=${encodeURIComponent(streaming)}`;
+  }
+  
+  try {
+    console.log('Fetching suggestions with URL:', url);
+    const response = await fetch(url, {
+      credentials: 'include' // Include cookies for authentication
+    });
+    
+    if (!response.ok) {
+      // Try to get more information about the error
+      let errorDetails = '';
+      try {
+        const errorData = await response.json();
+        errorDetails = JSON.stringify(errorData);
+        console.error('API error details:', errorData);
+      } catch (parseError) {
+        errorDetails = await response.text();
+        console.error('API error text:', errorDetails);
+      }
+      
+      throw new Error(`API request failed with status ${response.status}${errorDetails ? ': ' + errorDetails : ''}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching suggestions:', error);
+    throw error;
+  }
+}
+
+function updateSingleSuggestion(suggestion) {
+  document.getElementById('singleTitle').textContent = suggestion.title;
+  
+  // Format duration based on type (movie or TV show)
+  const durationText = suggestion.type === 'movie' 
+    ? `${suggestion.runtime || 'N/A'} min` 
+    : 'Série';
+  document.getElementById('singleDuration').textContent = durationText;
+  
+  // Extract year from release_date or first_air_date
+  const year = suggestion.release_date 
+    ? suggestion.release_date.substring(0, 4)
+    : suggestion.first_air_date 
+      ? suggestion.first_air_date.substring(0, 4)
+      : 'N/A';
+  document.getElementById('singleYear').textContent = year;
+  
+  // Set description from overview
+  document.getElementById('singleDescription').textContent = suggestion.overview || 'Sem descrição disponível';
+  
+  // Set streaming provider
+  document.getElementById('singleStreaming').textContent = suggestion.streaming || 'Não disponível em streaming';
+  
+  // Set poster image
+  const posterUrl = suggestion.poster_path 
+    ? `https://image.tmdb.org/t/p/w500${suggestion.poster_path}`
+    : 'https://via.placeholder.com/500x750?text=Sem+Poster';
+  document.getElementById('singlePoster').src = posterUrl;
+  document.getElementById('singlePoster').alt = `Poster de ${suggestion.title}`;
+}
+
+function addSuggestionCard(suggestion) {
+  const card = document.createElement('div');
+  card.className = 'suggestion-card bg-[#2d2d2d] rounded-xl overflow-hidden flex flex-col h-full';
+  
+  // Format duration based on type (movie or TV show)
+  const durationText = suggestion.type === 'movie' 
+    ? `${suggestion.runtime || 'N/A'} min` 
+    : 'Série';
+  
+  // Extract year from release_date or first_air_date
+  const year = suggestion.release_date 
+    ? suggestion.release_date.substring(0, 4)
+    : suggestion.first_air_date 
+      ? suggestion.first_air_date.substring(0, 4)
+      : 'N/A';
+  
+  // Set poster image
+  const posterUrl = suggestion.poster_path 
+    ? `https://image.tmdb.org/t/p/w500${suggestion.poster_path}`
+    : 'https://via.placeholder.com/500x750?text=Sem+Poster';
+  
+  card.innerHTML = `
+    <div class="aspect-[2/3] bg-gray-800 overflow-hidden">
+      <img src="${posterUrl}" alt="Poster de ${suggestion.title}" class="w-full h-full object-cover">
+    </div>
+    <div class="p-4 flex-1 flex flex-col">
+      <h3 class="text-xl font-bold mb-2">${suggestion.title}</h3>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${durationText}</span>
+        <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${year}</span>
+      </div>
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-gray-400 text-sm">Disponível em:</span>
+        <span class="bg-[#E50914] px-2 py-1 rounded-full text-xs font-medium">${suggestion.streaming || 'Não disponível'}</span>
+      </div>
+      <button class="dislike-button mt-auto bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all text-sm" data-id="${suggestion.id}">
+        Não gostei! Me dê outra
+      </button>
+    </div>
+  `;
+  
+  multipleSuggestions.querySelector('div').appendChild(card);
+  
+  // Setup dislike button
+  const dislikeButton = card.querySelector('.dislike-button');
+  dislikeButton.addEventListener('click', async function() {
+    if (isLoading) return;
+    
+    try {
+      isLoading = true;
+      this.textContent = 'Carregando...';
+      this.disabled = true;
+      
+      // Fetch new suggestions
+      const newSuggestions = await fetchSuggestions(selectedTime, selectedMood, selectedStreaming);
+      
+      if (!newSuggestions || newSuggestions.length === 0) {
+        alert('Não temos mais sugestões com esses critérios. Tente outros filtros!');
+        suggestionArea.classList.add('hidden');
+        isLoading = false;
+        this.textContent = 'Não gostei! Me dê outra';
+        this.disabled = false;
+        return;
+      }
+      
+      // Get new random suggestion
+      const newRandomIndex = Math.floor(Math.random() * newSuggestions.length);
+      const newSuggestion = newSuggestions[newRandomIndex];
+      
+      // Format duration based on type (movie or TV show)
+      const durationText = newSuggestion.type === 'movie' 
+        ? `${newSuggestion.runtime || 'N/A'} min` 
+        : 'Série';
+      
+      // Extract year from release_date or first_air_date
+      const year = newSuggestion.release_date 
+        ? newSuggestion.release_date.substring(0, 4)
+        : newSuggestion.first_air_date 
+          ? newSuggestion.first_air_date.substring(0, 4)
+          : 'N/A';
+      
+      // Set poster image
+      const posterUrl = newSuggestion.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${newSuggestion.poster_path}`
+        : 'https://via.placeholder.com/500x750?text=Sem+Poster';
+      
+      // Update card
+      const cardElement = this.closest('.suggestion-card');
+      cardElement.innerHTML = `
+        <div class="aspect-[2/3] bg-gray-800 overflow-hidden">
+          <img src="${posterUrl}" alt="Poster de ${newSuggestion.title}" class="w-full h-full object-cover">
+        </div>
+        <div class="p-4 flex-1 flex flex-col">
+          <h3 class="text-xl font-bold mb-2">${newSuggestion.title}</h3>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${durationText}</span>
+            <span class="bg-[#3d3d3d] text-xs px-2 py-1 rounded">${year}</span>
+          </div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-gray-400 text-sm">Disponível em:</span>
+            <span class="bg-[#E50914] px-2 py-1 rounded-full text-xs font-medium">${newSuggestion.streaming || 'Não disponível'}</span>
+          </div>
+          <button class="dislike-button mt-auto bg-[#3d3d3d] hover:bg-[#4d4d4d] text-white py-2 px-4 rounded-full transition-all text-sm" data-id="${newSuggestion.id}">
+            Não gostei! Me dê outra
+          </button>
+        </div>
+      `;
+      
+      // Setup new dislike button
+      const newDislikeButton = cardElement.querySelector('.dislike-button');
+      newDislikeButton.addEventListener('click', async function() {
+        if (isLoading) return;
+        dislikeButton.click();
+      });
+      
+      isLoading = false;
+    } catch (error) {
+      console.error('Error fetching new suggestion:', error);
+      alert('Ocorreu um erro ao buscar novas sugestões. Por favor, tente novamente.');
+    } finally {
+      isLoading = false;
+      this.textContent = 'Não gostei! Me dê outra';
+      this.disabled = false;
+    }
+  });
+}
+</script>
+<script src="tmdb-integration.js"></script>
+</body>
+</html>
